@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Pramana Context",
+  "description": "Remember why you opened it.",
+  "version": "0.1.1",
+  "permissions": ["tabs", "storage"],
+  "background": {
+    "service_worker": "background/serviceWorker.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "type": "module"
+  },
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  }
+}

@@ -1,10 +1,21 @@
-import { getContextByUrl, saveContext } from "../storage/contextStore.js"
+import { getContextByUrl, saveContext } from "../storage/contextStore.js";
 
 (async function () {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
 
-    if (!tab || !tab.url) return;
-    const context = await getContextByUrl(tab.url) || {};
+    // Only work with HTTP/HTTPS URLs
+    if (!tab || !tab.url || (!tab.url.startsWith("http://") && !tab.url.startsWith("https://"))) {
+        document.body.innerHTML = '<div style="padding: 20px; text-align: center;">Extension only works on web pages</div>';
+        return;
+    }
+    
+    let context = await getContextByUrl(tab.url);
+    
+    if (!context) {
+        const { createContext } = await import("../storage/contextModel.js");
+        context = createContext({ url: tab.url, title: tab.title });
+        await saveContext(context);
+    }
 
     document.getElementById("page-title").innerText = tab.title || "Untitled Page";
 
@@ -12,8 +23,14 @@ import { getContextByUrl, saveContext } from "../storage/contextStore.js"
     intentText.value = context?.intent || "";
 
     document.getElementById("save").onclick = async () => {
-        context.intent = intentText.value.trim();
-        await saveContext(tab.url, context);
+        if (intentText.value.trim()) {
+            context.intent = intentText.value.trim();
+            await saveContext(context);
+        }
         window.close();
+    };
+    
+    document.getElementById("search-btn").onclick = () => {
+        chrome.tabs.create({ url: chrome.runtime.getURL("search/search.html") });
     };
 })();

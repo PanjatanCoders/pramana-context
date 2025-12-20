@@ -13,3 +13,13 @@ button{
     margin-top: 8px;
     width: 100%;
 }
+
+.button-group {
+    display: flex;
+    gap: 8px;
+}
+
+.button-group button {
+    flex: 1;
+    margin-top: 8px;
+}

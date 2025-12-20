@@ -11,7 +11,13 @@ export async function saveContext(context) {
     await chrome.storage.local.set({ [STORAGE_KEY]: contexts });
 }
 
-export async function getContextByUrl(params) {
+export async function deleteContext(contextId) {
     const contexts = await getAllContexts();
-    return Object.values(contexts).find(c => c.url === url)
+    delete contexts[contextId];
+    await chrome.storage.local.set({ [STORAGE_KEY]: contexts });
+}
+
+export async function getContextByUrl(url) {
+    const contexts = await getAllContexts();
+    return Object.values(contexts).find(c => c.url === url);
 }

@@ -1,0 +1,144 @@
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f5f5f5;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+#search {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filters select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+}
+
+.context-item {
+    background: white;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+.context-item:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.context-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.context-title {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.context-status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.context-status.active {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.context-status.resolved {
+    background: #e8f5e8;
+    color: #388e3c;
+}
+
+.context-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.context-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+    color: #888;
+    flex: 1;
+}
+
+.context-intent {
+    color: #666;
+    font-style: italic;
+}
+
+.context-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.context-actions button {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: white;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.15s ease;
+}
+
+.context-actions button:hover {
+    background: #f0f0f0;
+    transform: scale(1.05);
+}
+
+.context-actions button:hover {
+    background: #f0f0f0;
+}
+
+.delete-btn {
+    background: #ffebee;
+    color: #c62828;
+    border-color: #ffcdd2;
+}
+
+.delete-btn:hover {
+    background: #ffcdd2;
+}
+
+.no-results {
+    text-align: center;
+    color: #666;
+    padding: 40px;
+    font-style: italic;
+}

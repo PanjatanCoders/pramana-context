@@ -15,6 +15,27 @@ function getHostname(url) {
     }
 }
 
+function formatTimeOpen(ms) {
+    if (!ms || ms === 0) return '';
+    const minutes = Math.floor(ms / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days}d ${hours % 24}h`;
+    if (hours > 0) return `${hours}h ${minutes % 60}m`;
+    if (minutes > 0) return `${minutes}m`;
+    return '<1m';
+}
+
+function getDaysSinceLastVisit(lastVisitedAt) {
+    return Math.floor((Date.now() - lastVisitedAt) / 86400000);
+}
+
+function isAbandoned(context) {
+    const ABANDONED_THRESHOLD_DAYS = 7;
+    return context.status === 'active' && getDaysSinceLastVisit(context.lastVisitedAt) >= ABANDONED_THRESHOLD_DAYS;
+}
+
 async function loadContexts() {
     const contexts = await getAllContexts();
     allContexts = Object.values(contexts);
@@ -29,18 +50,23 @@ function renderContexts(contexts) {
         return;
     }
 
-    container.innerHTML = contexts.map(context => `
-        <div class="context-item" data-id="${context.id}">
+    container.innerHTML = contexts.map(context => {
+        const abandoned = isAbandoned(context);
+        const daysSince = getDaysSinceLastVisit(context.lastVisitedAt);
+        return `
+        <div class="context-item ${abandoned ? 'abandoned' : ''}" data-id="${context.id}">
             <input type="checkbox" class="context-checkbox" data-checkbox-id="${context.id}" ${selectedContextIds.has(context.id) ? 'checked' : ''} />
             <div class="context-content">
                 <div class="context-header">
                     <h3 class="context-title">${context.title}</h3>
-                    <span class="context-status ${context.status}">${context.status}</span>
+                    <span class="context-status ${context.status}">${context.status}${abandoned ? ' ⚠️' : ''}</span>
                 </div>
                 <div class="context-bottom">
                     <div class="context-meta">
                         <span class="context-url">${getHostname(context.url)}</span>
                         <span class="context-visits">${context.visitCount} visits</span>
+                        ${abandoned ? `<span class="context-abandoned">⚠️ ${daysSince}d ago</span>` : ''}
+                        ${context.totalTimeOpen > 0 ? `<span class="context-time-open ${context.totalTimeOpen > 3600000 ? 'long-open' : ''}">⏱ ${formatTimeOpen(context.totalTimeOpen)}</span>` : ''}
                         <div class="intent-section">
                             <div class="intent-display-wrapper" data-intent-display="${context.id}">
                                 <span class="context-intent-text">${context.intent || '<span class="no-intent-text">Click pencil to add intent</span>'}</span>
@@ -57,7 +83,8 @@ function renderContexts(contexts) {
                 </div>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 
     // Add event listeners
     container.querySelectorAll('button[data-url]').forEach(btn => {
@@ -98,12 +125,17 @@ function filterAndSort() {
     const sortBy = document.getElementById("sort-by").value;
 
     let filtered = allContexts.filter(context => {
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
             context.title.toLowerCase().includes(searchTerm) ||
             (context.intent && context.intent.toLowerCase().includes(searchTerm));
-        
-        const matchesStatus = statusFilter === 'all' || context.status === statusFilter;
-        
+
+        let matchesStatus;
+        if (statusFilter === 'abandoned') {
+            matchesStatus = isAbandoned(context);
+        } else {
+            matchesStatus = statusFilter === 'all' || context.status === statusFilter;
+        }
+
         return matchesSearch && matchesStatus;
     });
 

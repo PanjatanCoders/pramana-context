@@ -23,6 +23,9 @@ export function createContext({ url, title }) {
     createdAt: Date.now(),
     lastVisitedAt: Date.now(),
     visitCount: 1,
-    status: "active"
+    status: "active",
+    currentlyOpen: false,
+    openedAt: null,
+    totalTimeOpen: 0
   };
 }

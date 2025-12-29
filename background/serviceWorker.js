@@ -1,6 +1,9 @@
 const STORAGE_KEY = "pramana_context";
 const SETTINGS_KEY = "pramana_settings";
 
+// Track which tabs have which URLs
+const tabUrlMap = new Map();
+
 async function getAllContexts() {
     const result = await chrome.storage.local.get(STORAGE_KEY);
     return result[STORAGE_KEY] || {};
@@ -56,6 +59,9 @@ async function handleTabContext(tab) {
     return;
   }
 
+  // Track this tab's URL
+  tabUrlMap.set(tab.id, tab.url);
+
   let context = await getContextByUrl(tab.url);
 
   // If context exists (manually added), always update visit count
@@ -63,6 +69,13 @@ async function handleTabContext(tab) {
     context.lastVisitedAt = Date.now();
     context.visitCount++;
     context.title = tab.title; // Update title in case it changed
+
+    // Mark as currently open and track open time
+    if (!context.currentlyOpen) {
+      context.currentlyOpen = true;
+      context.openedAt = Date.now();
+    }
+
     console.log('Updating visit count for existing context:', tab.url);
     await saveContext(context);
     return;
@@ -81,6 +94,8 @@ async function handleTabContext(tab) {
     url: tab.url,
     title: tab.title,
   });
+  context.currentlyOpen = true;
+  context.openedAt = Date.now();
 
   await saveContext(context);
 }
@@ -116,6 +131,27 @@ async function cleanupDuplicateUrls() {
 // Clean up on startup
 cleanupDuplicateUrls();
 
+// Update badge with abandoned count
+async function updateBadge() {
+  const contexts = await getAllContexts();
+  const abandonedCount = Object.values(contexts).filter(c => {
+    const ABANDONED_THRESHOLD_DAYS = 7;
+    const daysSince = Math.floor((Date.now() - c.lastVisitedAt) / 86400000);
+    return c.status === 'active' && daysSince >= ABANDONED_THRESHOLD_DAYS;
+  }).length;
+
+  if (abandonedCount > 0) {
+    chrome.action.setBadgeText({ text: String(abandonedCount) });
+    chrome.action.setBadgeBackgroundColor({ color: '#d32f2f' });
+  } else {
+    chrome.action.setBadgeText({ text: '' });
+  }
+}
+
+// Update badge on startup and every hour
+updateBadge();
+setInterval(updateBadge, 3600000);
+
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   try {
     const tab = await chrome.tabs.get(tabId);
@@ -136,3 +172,29 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     }
   }
 });
+
+chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+  try {
+    const url = tabUrlMap.get(tabId);
+    if (url) {
+      const context = await getContextByUrl(url);
+      if (context && context.currentlyOpen && context.openedAt) {
+        const timeOpen = Date.now() - context.openedAt;
+        context.totalTimeOpen = (context.totalTimeOpen || 0) + timeOpen;
+        context.currentlyOpen = false;
+        context.openedAt = null;
+        await saveContext(context);
+        console.log('Updated time open for:', url, formatTime(context.totalTimeOpen));
+      }
+      tabUrlMap.delete(tabId);
+    }
+  } catch (error) {
+    console.log('Error handling tab removal:', error);
+  }
+});
+
+function formatTime(ms) {
+  const minutes = Math.floor(ms / 60000);
+  const hours = Math.floor(minutes / 60);
+  return `${hours}h ${minutes % 60}m`;
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="search.css" />
+    <title>Pramana Context - Search</title>
+</head>
+<body>
+    <div class="header">
+        <h2>Context Memory</h2>
+        <div class="search-row">
+            <input type="text" id="search" placeholder="Search by intent or title..." />
+            <select id="status-filter" title="Filter by status">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="resolved">Resolved</option>
+                <option value="abandoned">Abandoned (7+ days)</option>
+            </select>
+            <select id="sort-by" title="Sort contexts">
+                <option value="recent">Most Recent</option>
+                <option value="visits">Most Visited</option>
+                <option value="created">Date Created</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <div class="settings-section">
+            <label class="toggle-label">
+                <input type="checkbox" id="auto-save-toggle" />
+                <span>Auto-save visited URLs</span>
+            </label>
+            <label class="toggle-label">
+                <input type="checkbox" id="group-view-toggle" />
+                <span>Group by Domain</span>
+            </label>
+        </div>
+        <div class="bulk-actions">
+            <button type="button" id="select-all-btn">Select All</button>
+            <button type="button" id="delete-selected-btn" class="delete-btn" disabled>Delete Selected</button>
+            <button type="button" id="export-btn">Export Data</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="contexts-list"></div>
+    </div>
+    
+    <script type="module" src="search.js"></script>
+</body>
+</html>

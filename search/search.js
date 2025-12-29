@@ -4,6 +4,7 @@ import { getSettings, saveSetting } from "../storage/settingsStore.js";
 let allContexts = [];
 let selectedContextIds = new Set();
 let groupViewEnabled = false;
+let searchDebounceTimer = null;
 
 function getHostname(url) {
     try {
@@ -298,7 +299,11 @@ async function deleteSelectedContexts() {
 async function loadSettings() {
     const settings = await getSettings();
     const autoSaveToggle = document.getElementById("auto-save-toggle");
+    const groupViewToggle = document.getElementById("group-view-toggle");
+
     autoSaveToggle.checked = settings.autoSaveUrls !== false;
+    groupViewEnabled = settings.groupByDomain === true;
+    groupViewToggle.checked = groupViewEnabled;
 }
 
 async function toggleAutoSave(enabled) {
@@ -409,7 +414,10 @@ function cancelEdit(contextId) {
     }
 }
 
-document.getElementById("search").addEventListener("input", filterAndSort);
+document.getElementById("search").addEventListener("input", () => {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(filterAndSort, 300);
+});
 document.getElementById("status-filter").addEventListener("change", filterAndSort);
 document.getElementById("sort-by").addEventListener("change", filterAndSort);
 document.getElementById("select-all-btn").addEventListener("click", toggleSelectAll);
@@ -417,10 +425,24 @@ document.getElementById("delete-selected-btn").addEventListener("click", deleteS
 document.getElementById("auto-save-toggle").addEventListener("change", (e) => {
     toggleAutoSave(e.target.checked);
 });
-document.getElementById("group-view-toggle").addEventListener("change", (e) => {
+document.getElementById("group-view-toggle").addEventListener("change", async (e) => {
     groupViewEnabled = e.target.checked;
+    await saveSetting('groupByDomain', groupViewEnabled);
     loadContexts();
 });
+document.getElementById("export-btn").addEventListener("click", exportData);
+
+async function exportData() {
+    const contexts = await getAllContexts();
+    const dataStr = JSON.stringify(contexts, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `pramana-context-export-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+}
 
 loadContexts();
 loadSettings();

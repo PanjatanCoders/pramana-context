@@ -148,9 +148,33 @@ async function updateBadge() {
   }
 }
 
+// Storage cleanup - remove resolved contexts older than 30 days
+async function cleanupOldResolvedContexts() {
+  const contexts = await getAllContexts();
+  const CLEANUP_THRESHOLD = 30 * 24 * 60 * 60 * 1000; // 30 days
+  let cleanedCount = 0;
+
+  for (const [id, context] of Object.entries(contexts)) {
+    if (context.status === 'resolved' &&
+        Date.now() - context.lastVisitedAt > CLEANUP_THRESHOLD) {
+      await deleteContext(id);
+      cleanedCount++;
+    }
+  }
+
+  if (cleanedCount > 0) {
+    console.log(`Cleaned up ${cleanedCount} old resolved contexts`);
+    await updateBadge();
+  }
+}
+
 // Update badge on startup and every hour
 updateBadge();
 setInterval(updateBadge, 3600000);
+
+// Cleanup old resolved contexts on startup and daily
+cleanupOldResolvedContexts();
+setInterval(cleanupOldResolvedContexts, 86400000);
 
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   try {

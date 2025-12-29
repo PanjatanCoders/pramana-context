@@ -3,6 +3,7 @@ import { getSettings, saveSetting } from "../storage/settingsStore.js";
 
 let allContexts = [];
 let selectedContextIds = new Set();
+let groupViewEnabled = false;
 
 function getHostname(url) {
     try {
@@ -36,10 +37,35 @@ function isAbandoned(context) {
     return context.status === 'active' && getDaysSinceLastVisit(context.lastVisitedAt) >= ABANDONED_THRESHOLD_DAYS;
 }
 
+function groupContextsByDomain(contexts) {
+    const groups = {};
+    contexts.forEach(context => {
+        const domain = getHostname(context.url);
+        if (!groups[domain]) {
+            groups[domain] = {
+                domain,
+                contexts: [],
+                count: 0,
+                totalVisits: 0,
+                lastVisit: 0
+            };
+        }
+        groups[domain].contexts.push(context);
+        groups[domain].count++;
+        groups[domain].totalVisits += context.visitCount;
+        groups[domain].lastVisit = Math.max(groups[domain].lastVisit, context.lastVisitedAt);
+    });
+    return Object.values(groups).sort((a, b) => b.lastVisit - a.lastVisit);
+}
+
 async function loadContexts() {
     const contexts = await getAllContexts();
     allContexts = Object.values(contexts);
-    renderContexts(allContexts);
+    if (groupViewEnabled) {
+        renderGroupedView(allContexts);
+    } else {
+        renderContexts(allContexts);
+    }
 }
 
 function renderContexts(contexts) {
@@ -116,6 +142,54 @@ function renderContexts(contexts) {
             }
             updateBulkActionsState();
         });
+    });
+}
+
+function renderGroupedView(contexts) {
+    const container = document.getElementById("contexts-list");
+    const groups = groupContextsByDomain(contexts);
+
+    if (groups.length === 0) {
+        container.innerHTML = '<div class="no-results">No contexts found</div>';
+        return;
+    }
+
+    container.innerHTML = groups.map(group => `
+        <div class="domain-group">
+            <div class="domain-group-header">
+                <h3 class="domain-name">${group.domain}</h3>
+                <span class="group-stats">${group.count} page${group.count > 1 ? 's' : ''} • ${group.totalVisits} total visits</span>
+            </div>
+            <div class="domain-group-contexts">
+                ${group.contexts.map(context => {
+                    const abandoned = isAbandoned(context);
+                    const daysSince = getDaysSinceLastVisit(context.lastVisitedAt);
+                    return `
+                    <div class="context-item-mini ${abandoned ? 'abandoned' : ''}" data-id="${context.id}">
+                        <div class="context-mini-title">${context.title}</div>
+                        <div class="context-mini-meta">
+                            <span>${context.visitCount} visits</span>
+                            ${abandoned ? `<span class="mini-abandoned">⚠️ ${daysSince}d</span>` : ''}
+                            ${context.intent ? `<span class="mini-intent">"${context.intent}"</span>` : ''}
+                        </div>
+                        <div class="context-mini-actions">
+                            <button data-url="${context.url}" class="mini-btn">Open</button>
+                            <button data-id="${context.id}" data-status="${context.status}" class="mini-btn">${context.status === 'active' ? 'Resolve' : 'Active'}</button>
+                        </div>
+                    </div>
+                `;
+                }).join('')}
+            </div>
+        </div>
+    `).join('');
+
+    // Add event listeners
+    container.querySelectorAll('button[data-url]').forEach(btn => {
+        btn.addEventListener('click', () => openContext(btn.dataset.url));
+    });
+
+    container.querySelectorAll('button[data-id]').forEach(btn => {
+        btn.addEventListener('click', () => toggleStatus(btn.dataset.id));
     });
 }
 
@@ -342,6 +416,10 @@ document.getElementById("select-all-btn").addEventListener("click", toggleSelect
 document.getElementById("delete-selected-btn").addEventListener("click", deleteSelectedContexts);
 document.getElementById("auto-save-toggle").addEventListener("change", (e) => {
     toggleAutoSave(e.target.checked);
+});
+document.getElementById("group-view-toggle").addEventListener("change", (e) => {
+    groupViewEnabled = e.target.checked;
+    loadContexts();
 });
 
 loadContexts();

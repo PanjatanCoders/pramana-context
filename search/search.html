@@ -11,7 +11,7 @@
         <h2>Context Memory</h2>
         <input type="text" id="search" placeholder="Search by intent or title..." />
     </div>
-    
+
     <div class="filters">
         <select id="status-filter" title="Filter by status">
             <option value="all">All Status</option>
@@ -23,6 +23,19 @@
             <option value="visits">Most Visited</option>
             <option value="created">Date Created</option>
         </select>
+    </div>
+
+    <div class="toolbar">
+        <div class="settings-section">
+            <label class="toggle-label">
+                <input type="checkbox" id="auto-save-toggle" />
+                <span>Auto-save visited URLs</span>
+            </label>
+        </div>
+        <div class="bulk-actions">
+            <button type="button" id="select-all-btn">Select All</button>
+            <button type="button" id="delete-selected-btn" class="delete-btn" disabled>Delete Selected</button>
+        </div>
     </div>
 
     <div id="contexts-list"></div>

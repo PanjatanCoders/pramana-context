@@ -1,8 +1,15 @@
 const STORAGE_KEY = "pramana_context";
+const SETTINGS_KEY = "pramana_settings";
 
 async function getAllContexts() {
     const result = await chrome.storage.local.get(STORAGE_KEY);
     return result[STORAGE_KEY] || {};
+}
+
+async function getAutoSaveEnabled() {
+    const result = await chrome.storage.local.get(SETTINGS_KEY);
+    const settings = result[SETTINGS_KEY] || { autoSaveUrls: true };
+    return settings.autoSaveUrls !== false;
 }
 
 async function saveContext(context) {
@@ -37,32 +44,44 @@ function createContext({ url, title }) {
 
 async function handleTabContext(tab) {
   console.log('Processing tab:', tab?.url);
-  
+
   // Only track HTTP/HTTPS URLs
   if (!tab || !tab.url) {
     console.log('No tab or URL');
     return;
   }
-  
+
   if (!tab.url.startsWith("http://") && !tab.url.startsWith("https://")) {
     console.log('Not HTTP/HTTPS:', tab.url);
     return;
   }
-  
-  console.log('Saving context for:', tab.url);
 
   let context = await getContextByUrl(tab.url);
 
-  if (!context) {
-    context = createContext({
-      url: tab.url,
-      title: tab.title,
-    });
-  } else {
+  // If context exists (manually added), always update visit count
+  if (context) {
     context.lastVisitedAt = Date.now();
     context.visitCount++;
     context.title = tab.title; // Update title in case it changed
+    console.log('Updating visit count for existing context:', tab.url);
+    await saveContext(context);
+    return;
   }
+
+  // Check if auto-save is enabled for new contexts
+  const autoSaveEnabled = await getAutoSaveEnabled();
+  if (!autoSaveEnabled) {
+    console.log('Auto-save is disabled, not creating new context');
+    return;
+  }
+
+  // Create new context only if auto-save is enabled
+  console.log('Creating new context for:', tab.url);
+  context = createContext({
+    url: tab.url,
+    title: tab.title,
+  });
+
   await saveContext(context);
 }
 

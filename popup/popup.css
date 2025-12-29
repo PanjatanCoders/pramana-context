@@ -23,3 +23,41 @@ button{
     flex: 1;
     margin-top: 8px;
 }
+
+.save-page-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.save-page-btn:hover {
+    background: #45a049;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.context-status {
+    font-size: 12px;
+    padding: 6px 8px;
+    margin: 8px 0;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.context-status.saved {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.context-status.not-saved {
+    background: #fff3e0;
+    color: #e65100;
+}

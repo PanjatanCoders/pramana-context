@@ -444,5 +444,8 @@ async function exportData() {
     URL.revokeObjectURL(url);
 }
 
-loadContexts();
-loadSettings();
+// Load settings first, then contexts
+(async () => {
+    await loadSettings();
+    await loadContexts();
+})();

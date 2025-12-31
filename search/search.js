@@ -5,6 +5,9 @@ let allContexts = [];
 let selectedContextIds = new Set();
 let groupViewEnabled = false;
 let searchDebounceTimer = null;
+let currentPage = 1;
+let itemsPerPage = 10;
+let filteredContexts = [];
 
 function getHostname(url) {
     try {
@@ -15,6 +18,38 @@ function getHostname(url) {
     } catch {
         return url || 'Unknown';
     }
+}
+
+function getGroupingDomain(url) {
+    const hostname = getHostname(url);
+    if (hostname === 'Unknown') return hostname;
+
+    // Common hosting services that should group by parent domain
+    // Check for Netlify
+    if (/\.netlify\.app$/i.test(hostname)) return 'netlify.app';
+    if (/\.netlify\.com$/i.test(hostname)) return 'netlify.com';
+
+    // GitHub Pages
+    if (/\.github\.io$/i.test(hostname)) return 'github.io';
+
+    // Vercel
+    if (/\.vercel\.app$/i.test(hostname)) return 'vercel.app';
+
+    // Heroku
+    if (/\.herokuapp\.com$/i.test(hostname)) return 'herokuapp.com';
+
+    // Azure
+    if (/\.azurewebsites\.net$/i.test(hostname)) return 'azurewebsites.net';
+
+    // Firebase
+    if (/\.firebaseapp\.com$/i.test(hostname)) return 'firebaseapp.com';
+    if (/\.web\.app$/i.test(hostname)) return 'web.app';
+
+    // CloudFront
+    if (/\.cloudfront\.net$/i.test(hostname)) return 'cloudfront.net';
+
+    // For regular domains, return full hostname
+    return hostname;
 }
 
 function formatTimeOpen(ms) {
@@ -41,7 +76,7 @@ function isAbandoned(context) {
 function groupContextsByDomain(contexts) {
     const groups = {};
     contexts.forEach(context => {
-        const domain = getHostname(context.url);
+        const domain = getGroupingDomain(context.url);
         if (!groups[domain]) {
             groups[domain] = {
                 domain,
@@ -62,6 +97,8 @@ function groupContextsByDomain(contexts) {
 async function loadContexts() {
     const contexts = await getAllContexts();
     allContexts = Object.values(contexts);
+    filteredContexts = allContexts;
+    currentPage = 1; // Reset to first page
     if (groupViewEnabled) {
         renderGroupedView(allContexts);
     } else {
@@ -71,13 +108,29 @@ async function loadContexts() {
 
 function renderContexts(contexts) {
     const container = document.getElementById("contexts-list");
+    const paginationDiv = document.getElementById("pagination");
 
     if (contexts.length === 0) {
         container.innerHTML = '<div class="no-results">No contexts found</div>';
+        paginationDiv.classList.add('hidden');
         return;
     }
 
-    container.innerHTML = contexts.map(context => {
+    // Calculate pagination
+    const totalPages = Math.ceil(contexts.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedContexts = contexts.slice(startIndex, endIndex);
+
+    // Show/hide pagination
+    if (totalPages > 1) {
+        paginationDiv.classList.remove('hidden');
+        updatePaginationUI(currentPage, totalPages);
+    } else {
+        paginationDiv.classList.add('hidden');
+    }
+
+    container.innerHTML = paginatedContexts.map(context => {
         const abandoned = isAbandoned(context);
         const daysSince = getDaysSinceLastVisit(context.lastVisitedAt);
         return `
@@ -227,7 +280,30 @@ function filterAndSort() {
         }
     });
 
+    filteredContexts = filtered;
+    currentPage = 1; // Reset to first page on filter change
     renderContexts(filtered);
+}
+
+function updatePaginationUI(page, totalPages) {
+    const prevBtn = document.getElementById("prev-page");
+    const nextBtn = document.getElementById("next-page");
+    const pageInfo = document.getElementById("page-info");
+
+    prevBtn.disabled = page === 1;
+    nextBtn.disabled = page === totalPages;
+    pageInfo.textContent = `Page ${page} of ${totalPages}`;
+}
+
+function goToPage(page) {
+    const totalPages = Math.ceil(filteredContexts.length / itemsPerPage);
+    if (page < 1 || page > totalPages) return;
+
+    currentPage = page;
+    renderContexts(filteredContexts);
+
+    // Scroll to top of list
+    document.getElementById("contexts-list").scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function deleteContextItem(contextId) {
@@ -431,6 +507,15 @@ document.getElementById("group-view-toggle").addEventListener("change", async (e
     loadContexts();
 });
 document.getElementById("export-btn").addEventListener("click", exportData);
+
+// Pagination event listeners
+document.getElementById("prev-page").addEventListener("click", () => {
+    goToPage(currentPage - 1);
+});
+
+document.getElementById("next-page").addEventListener("click", () => {
+    goToPage(currentPage + 1);
+});
 
 async function exportData() {
     const contexts = await getAllContexts();

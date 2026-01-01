@@ -8,6 +8,7 @@ let searchDebounceTimer = null;
 let currentPage = 1;
 let itemsPerPage = 10;
 let filteredContexts = [];
+let collapsedGroups = new Set();
 
 function getHostname(url) {
     try {
@@ -73,6 +74,107 @@ function isAbandoned(context) {
     return context.status === 'active' && getDaysSinceLastVisit(context.lastVisitedAt) >= ABANDONED_THRESHOLD_DAYS;
 }
 
+// Priority calculation based on visits and time spent
+function getPriority(context) {
+    const highVisitThreshold = 10;
+    const highTimeThreshold = 3600000; // 1 hour
+
+    if (context.visitCount >= highVisitThreshold || context.totalTimeOpen >= highTimeThreshold) {
+        return 'high';
+    } else if (context.visitCount >= 5 || context.totalTimeOpen >= 1800000) {
+        return 'medium';
+    }
+    return 'normal';
+}
+
+// Toast notification system
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+
+    const icons = {
+        success: '✓',
+        error: '✕',
+        info: 'ℹ'
+    };
+
+    toast.innerHTML = `
+        <span class="toast-icon">${icons[type] || icons.info}</span>
+        <span class="toast-message">${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('fadeOut');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Theme toggle
+function toggleTheme() {
+    const body = document.body;
+    const themeBtn = document.getElementById('theme-toggle');
+    const isLight = body.classList.toggle('light-theme');
+
+    themeBtn.textContent = isLight ? '☀️' : '🌙';
+    saveSetting('theme', isLight ? 'light' : 'dark');
+    showToast(`Switched to ${isLight ? 'light' : 'dark'} theme`, 'success');
+}
+
+// Statistics calculation
+function calculateStatistics(contexts) {
+    const stats = {
+        total: contexts.length,
+        active: contexts.filter(c => c.status === 'active').length,
+        resolved: contexts.filter(c => c.status === 'resolved').length,
+        totalVisits: contexts.reduce((sum, c) => sum + c.visitCount, 0),
+        totalTime: contexts.reduce((sum, c) => sum + (c.totalTimeOpen || 0), 0),
+        mostVisited: null
+    };
+
+    if (contexts.length > 0) {
+        const sorted = [...contexts].sort((a, b) => b.visitCount - a.visitCount);
+        stats.mostVisited = sorted[0];
+    }
+
+    return stats;
+}
+
+// Update statistics dashboard
+function updateStatistics(contexts) {
+    const stats = calculateStatistics(contexts);
+
+    document.getElementById('stat-total').textContent = stats.total;
+    document.getElementById('stat-active').textContent = stats.active;
+    document.getElementById('stat-resolved').textContent = stats.resolved;
+    document.getElementById('stat-visits').textContent = stats.totalVisits;
+
+    const hours = Math.floor(stats.totalTime / 3600000);
+    const minutes = Math.floor((stats.totalTime % 3600000) / 60000);
+    document.getElementById('stat-time').textContent = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+
+    document.getElementById('stat-most-visited').textContent =
+        stats.mostVisited ? `${stats.mostVisited.title.substring(0, 20)}...` : '-';
+}
+
+// Date range filtering
+function filterByDateRange(contexts, range) {
+    const now = Date.now();
+    const ranges = {
+        'today': 86400000, // 1 day
+        'week': 604800000, // 7 days
+        'month': 2592000000, // 30 days
+        '3months': 7776000000 // 90 days
+    };
+
+    if (range === 'all') return contexts;
+
+    const threshold = now - ranges[range];
+    return contexts.filter(c => c.lastVisitedAt >= threshold);
+}
+
 function groupContextsByDomain(contexts) {
     const groups = {};
     contexts.forEach(context => {
@@ -97,6 +199,7 @@ function groupContextsByDomain(contexts) {
 async function loadContexts() {
     const contexts = await getAllContexts();
     allContexts = Object.values(contexts);
+    updateStatistics(allContexts);
     filteredContexts = allContexts;
     currentPage = 1; // Reset to first page
     if (groupViewEnabled) {
@@ -133,20 +236,27 @@ function renderContexts(contexts) {
     container.innerHTML = paginatedContexts.map(context => {
         const abandoned = isAbandoned(context);
         const daysSince = getDaysSinceLastVisit(context.lastVisitedAt);
+        const priority = getPriority(context);
         return `
-        <div class="context-item ${abandoned ? 'abandoned' : ''}" data-id="${context.id}">
+        <div class="context-item ${abandoned ? 'abandoned' : ''} ${priority !== 'normal' ? priority + '-priority' : ''}" data-id="${context.id}">
             <input type="checkbox" class="context-checkbox" data-checkbox-id="${context.id}" ${selectedContextIds.has(context.id) ? 'checked' : ''} />
             <div class="context-content">
                 <div class="context-header">
-                    <h3 class="context-title">${context.title}</h3>
+                    <h3 class="context-title">
+                        ${context.title}
+                        ${priority === 'high' ? '<span class="priority-badge high">HIGH</span>' : ''}
+                        ${priority === 'medium' ? '<span class="priority-badge medium">MED</span>' : ''}
+                    </h3>
                     <span class="context-status ${context.status}">${context.status}${abandoned ? ' ⚠️' : ''}</span>
                 </div>
-                <div class="context-bottom">
-                    <div class="context-meta">
+                <div class="context-table">
+                    <div class="context-col-left">
                         <span class="context-url">${getHostname(context.url)}</span>
                         <span class="context-visits">${context.visitCount} visits</span>
                         ${abandoned ? `<span class="context-abandoned">⚠️ ${daysSince}d ago</span>` : ''}
                         ${context.totalTimeOpen > 0 ? `<span class="context-time-open ${context.totalTimeOpen > 3600000 ? 'long-open' : ''}">⏱ ${formatTimeOpen(context.totalTimeOpen)}</span>` : ''}
+                    </div>
+                    <div class="context-col-center">
                         <div class="intent-section">
                             <div class="intent-display-wrapper" data-intent-display="${context.id}">
                                 <span class="context-intent-text">${context.intent || '<span class="no-intent-text">Click pencil to add intent</span>'}</span>
@@ -155,10 +265,12 @@ function renderContexts(contexts) {
                             <textarea class="intent-edit hidden" data-intent-edit="${context.id}" placeholder="Add intent...">${context.intent || ''}</textarea>
                         </div>
                     </div>
-                    <div class="context-actions">
-                        <button data-url="${context.url}">Open</button>
-                        <button data-id="${context.id}" data-status="${context.status}">${context.status === 'active' ? 'Resolve' : 'Active'}</button>
-                        <button data-delete="${context.id}" class="delete-btn">×</button>
+                    <div class="context-col-right">
+                        <div class="context-actions">
+                            <button data-url="${context.url}">Open</button>
+                            <button data-id="${context.id}" data-status="${context.status}">${context.status === 'active' ? 'Resolve' : 'Active'}</button>
+                            <button data-delete="${context.id}" class="delete-btn">×</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -208,11 +320,28 @@ function renderGroupedView(contexts) {
         return;
     }
 
-    container.innerHTML = groups.map(group => `
-        <div class="domain-group">
-            <div class="domain-group-header">
+    // Sort contexts within each group by visit count
+    groups.forEach(group => {
+        group.contexts.sort((a, b) => b.visitCount - a.visitCount);
+    });
+
+    container.innerHTML = groups.map(group => {
+        const isCollapsed = collapsedGroups.has(group.domain);
+        const previewContexts = group.contexts.slice(0, 3);
+
+        return `
+        <div class="domain-group ${isCollapsed ? 'collapsed' : ''}" data-domain="${group.domain}">
+            <div class="domain-group-header" data-toggle-domain="${group.domain}">
                 <h3 class="domain-name">${group.domain}</h3>
                 <span class="group-stats">${group.count} page${group.count > 1 ? 's' : ''} • ${group.totalVisits} total visits</span>
+            </div>
+            <div class="domain-group-preview">
+                ${previewContexts.map(context => `
+                    <div class="preview-item">
+                        <strong>${context.title}</strong> - ${context.visitCount} visits
+                    </div>
+                `).join('')}
+                ${group.count > 3 ? `<div class="preview-item">... and ${group.count - 3} more</div>` : ''}
             </div>
             <div class="domain-group-contexts">
                 ${group.contexts.map(context => {
@@ -221,21 +350,27 @@ function renderGroupedView(contexts) {
                     return `
                     <div class="context-item-mini ${abandoned ? 'abandoned' : ''}" data-id="${context.id}">
                         <div class="context-mini-title">${context.title}</div>
-                        <div class="context-mini-meta">
-                            <span>${context.visitCount} visits</span>
-                            ${abandoned ? `<span class="mini-abandoned">⚠️ ${daysSince}d</span>` : ''}
-                            ${context.intent ? `<span class="mini-intent">"${context.intent}"</span>` : ''}
-                        </div>
-                        <div class="context-mini-actions">
-                            <button data-url="${context.url}" class="mini-btn">Open</button>
-                            <button data-id="${context.id}" data-status="${context.status}" class="mini-btn">${context.status === 'active' ? 'Resolve' : 'Active'}</button>
+                        <div class="context-mini-table">
+                            <div class="mini-col-left">
+                                <span>${context.visitCount} visits</span>
+                                ${abandoned ? `<span class="mini-abandoned">⚠️ ${daysSince}d</span>` : ''}
+                            </div>
+                            <div class="mini-col-center">
+                                ${context.intent ? `<span class="mini-intent">"${context.intent}"</span>` : '<span class="mini-intent no-intent">-</span>'}
+                            </div>
+                            <div class="mini-col-right">
+                                <div class="context-mini-actions">
+                                    <button data-url="${context.url}" class="mini-btn">Open</button>
+                                    <button data-id="${context.id}" data-status="${context.status}" class="mini-btn">${context.status === 'active' ? 'Resolve' : 'Active'}</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
                 }).join('')}
             </div>
         </div>
-    `).join('');
+    `}).join('');
 
     // Add event listeners
     container.querySelectorAll('button[data-url]').forEach(btn => {
@@ -245,14 +380,35 @@ function renderGroupedView(contexts) {
     container.querySelectorAll('button[data-id]').forEach(btn => {
         btn.addEventListener('click', () => toggleStatus(btn.dataset.id));
     });
+
+    // Add toggle event listeners for collapsible groups
+    container.querySelectorAll('[data-toggle-domain]').forEach(header => {
+        header.addEventListener('click', () => {
+            const domain = header.dataset.toggleDomain;
+            const groupDiv = header.closest('.domain-group');
+
+            if (collapsedGroups.has(domain)) {
+                collapsedGroups.delete(domain);
+                groupDiv.classList.remove('collapsed');
+            } else {
+                collapsedGroups.add(domain);
+                groupDiv.classList.add('collapsed');
+            }
+        });
+    });
 }
 
 function filterAndSort() {
     const searchTerm = document.getElementById("search").value.toLowerCase();
     const statusFilter = document.getElementById("status-filter").value;
+    const dateRange = document.getElementById("date-range-filter").value;
     const sortBy = document.getElementById("sort-by").value;
 
-    let filtered = allContexts.filter(context => {
+    // Apply date range filter first
+    let filtered = filterByDateRange(allContexts, dateRange);
+
+    // Then apply search and status filters
+    filtered = filtered.filter(context => {
         const matchesSearch = !searchTerm ||
             context.title.toLowerCase().includes(searchTerm) ||
             (context.intent && context.intent.toLowerCase().includes(searchTerm));
@@ -282,7 +438,13 @@ function filterAndSort() {
 
     filteredContexts = filtered;
     currentPage = 1; // Reset to first page on filter change
-    renderContexts(filtered);
+    updateStatistics(filtered); // Update stats based on filtered data
+
+    if (groupViewEnabled) {
+        renderGroupedView(filtered);
+    } else {
+        renderContexts(filtered);
+    }
 }
 
 function updatePaginationUI(page, totalPages) {
@@ -309,18 +471,22 @@ function goToPage(page) {
 async function deleteContextItem(contextId) {
     await deleteContext(contextId);
     await loadContexts();
+    showToast('Context deleted', 'success');
 }
 
 function openContext(url) {
     chrome.tabs.create({ url });
+    showToast('Opening in new tab', 'info');
 }
 
 async function toggleStatus(contextId) {
     const context = allContexts.find(c => c.id === contextId);
     if (context) {
-        context.status = context.status === 'active' ? 'resolved' : 'active';
+        const newStatus = context.status === 'active' ? 'resolved' : 'active';
+        context.status = newStatus;
         await saveContext(context);
         await loadContexts();
+        showToast(`Marked as ${newStatus}`, 'success');
     }
 }
 
@@ -370,16 +536,26 @@ async function deleteSelectedContexts() {
     selectedContextIds.clear();
     await loadContexts();
     updateBulkActionsState();
+    showToast(`Deleted ${count} context${count > 1 ? 's' : ''}`, 'success');
 }
 
 async function loadSettings() {
     const settings = await getSettings();
     const autoSaveToggle = document.getElementById("auto-save-toggle");
     const groupViewToggle = document.getElementById("group-view-toggle");
+    const themeBtn = document.getElementById('theme-toggle');
 
     autoSaveToggle.checked = settings.autoSaveUrls !== false;
     groupViewEnabled = settings.groupByDomain === true;
     groupViewToggle.checked = groupViewEnabled;
+
+    // Load theme
+    if (settings.theme === 'light') {
+        document.body.classList.add('light-theme');
+        themeBtn.textContent = '☀️';
+    } else {
+        themeBtn.textContent = '🌙';
+    }
 }
 
 async function toggleAutoSave(enabled) {
@@ -495,18 +671,22 @@ document.getElementById("search").addEventListener("input", () => {
     searchDebounceTimer = setTimeout(filterAndSort, 300);
 });
 document.getElementById("status-filter").addEventListener("change", filterAndSort);
+document.getElementById("date-range-filter").addEventListener("change", filterAndSort);
 document.getElementById("sort-by").addEventListener("change", filterAndSort);
 document.getElementById("select-all-btn").addEventListener("click", toggleSelectAll);
 document.getElementById("delete-selected-btn").addEventListener("click", deleteSelectedContexts);
 document.getElementById("auto-save-toggle").addEventListener("change", (e) => {
     toggleAutoSave(e.target.checked);
+    showToast(`Auto-save ${e.target.checked ? 'enabled' : 'disabled'}`, 'success');
 });
 document.getElementById("group-view-toggle").addEventListener("change", async (e) => {
     groupViewEnabled = e.target.checked;
     await saveSetting('groupByDomain', groupViewEnabled);
     loadContexts();
+    showToast(`Group view ${e.target.checked ? 'enabled' : 'disabled'}`, 'success');
 });
 document.getElementById("export-btn").addEventListener("click", exportData);
+document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
 
 // Pagination event listeners
 document.getElementById("prev-page").addEventListener("click", () => {
@@ -527,6 +707,7 @@ async function exportData() {
     link.download = `pramana-context-export-${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     URL.revokeObjectURL(url);
+    showToast('Data exported successfully', 'success');
 }
 
 // Load settings first, then contexts

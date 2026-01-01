@@ -8,7 +8,10 @@
 </head>
 <body>
     <div class="header">
-        <h2>Context Memory</h2>
+        <div class="header-top">
+            <h2>Context Memory</h2>
+            <button type="button" id="theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+        </div>
         <div class="controls-row">
             <div class="bulk-actions-compact">
                 <button type="button" id="select-all-btn" title="Select/Deselect All">☑</button>
@@ -16,6 +19,13 @@
                 <button type="button" id="export-btn" title="Export Data">⬇</button>
             </div>
             <input type="text" id="search" placeholder="Search by intent or title..." />
+            <select id="date-range-filter" title="Filter by date range">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">Last 7 Days</option>
+                <option value="month">Last 30 Days</option>
+                <option value="3months">Last 3 Months</option>
+            </select>
             <select id="status-filter" title="Filter by status">
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -38,6 +48,34 @@
         </div>
     </div>
 
+    <!-- Statistics Dashboard -->
+    <div id="stats-dashboard" class="stats-dashboard">
+        <div class="stat-card">
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-label">Total Contexts</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="stat-active">0</div>
+            <div class="stat-label">Active</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="stat-resolved">0</div>
+            <div class="stat-label">Resolved</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="stat-visits">0</div>
+            <div class="stat-label">Total Visits</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="stat-time">0h</div>
+            <div class="stat-label">Time Spent</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="stat-most-visited">-</div>
+            <div class="stat-label">Most Visited</div>
+        </div>
+    </div>
+
     <div class="container">
         <div id="contexts-list"></div>
         <div id="pagination" class="pagination hidden">
@@ -46,6 +84,9 @@
             <button type="button" id="next-page" class="pagination-btn">Next →</button>
         </div>
     </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
 
     <script type="module" src="search.js"></script>
 </body>

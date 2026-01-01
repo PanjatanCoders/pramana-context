@@ -12,21 +12,27 @@ Pramana Context preserves the *intent* behind every tab, so you never lose conte
 
 ### Core Functionality
 - **Intent Tracking**: Add notes about why you opened each page
-- **Smart Search**: Find tabs by intent or title
+- **Smart Search**: Find tabs by intent or title with debounced search
 - **Context Memory**: Track visit counts and time spent on each page
 - **Abandoned Tabs**: Automatically identify tabs you haven't visited in 7+ days
-- **Domain Grouping**: Organize tabs by website for better overview
+- **Domain Grouping**: Organize tabs by website (Netlify, GitHub Pages, Vercel, etc.)
 - **Export Data**: Backup your contexts in JSON format
 - **Privacy First**: All data stored locally on your device
 
 ### Advanced Features
+- **Statistics Dashboard**: Real-time metrics for total contexts, active/resolved status, visits, and time spent
+- **Date Range Filtering**: Filter by Today, Last 7 Days, Last 30 Days, or Last 3 Months
+- **Priority Indicators**: Visual HIGH/MED badges for frequently visited or long-running contexts
+- **Pagination**: View 10 items per page for better performance with large datasets
+- **Collapsible Groups**: Expand/collapse domain groups with preview of top 3 contexts
+- **Dark/Light Theme**: Toggle between developer-friendly dark and clean light themes
+- **Toast Notifications**: Instant feedback for all actions
 - **Auto-save Toggle**: Choose automatic or manual URL tracking
 - **Inline Editing**: Edit intent notes directly in the search interface
 - **Bulk Operations**: Select and delete multiple contexts at once
 - **Badge Notifications**: See count of abandoned contexts at a glance
 - **Status Management**: Mark contexts as Active or Resolved
 - **Time Tracking**: See how long you've kept tabs open
-- **Dark Theme**: Developer-friendly UI optimized for long sessions
 
 ---
 
@@ -150,11 +156,28 @@ Read our full [Privacy Policy](PRIVACY_POLICY.md)
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to:
-- Report bugs via GitHub Issues
-- Suggest features
-- Submit Pull Requests
-- Improve documentation
+**This is an open-source project and we welcome contributions!**
+
+GitHub Repository: [https://github.com/PanjatanCoders/pramana-context](https://github.com/PanjatanCoders/pramana-context)
+
+### How to Contribute
+- 🐛 **Report bugs** via [GitHub Issues](https://github.com/PanjatanCoders/pramana-context/issues)
+- 💡 **Suggest features** or improvements
+- 🔧 **Submit Pull Requests** for bug fixes or new features
+- 📖 **Improve documentation** or add examples
+- ⭐ **Star the repository** to show your support
+- 🔀 **Fork the project** and build your own extensions
+
+### Development Setup
+1. Fork the repository
+2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/pramana-context.git`
+3. Create a feature branch: `git checkout -b feature/amazing-feature`
+4. Make your changes and test thoroughly
+5. Commit: `git commit -m 'Add amazing feature'`
+6. Push: `git push origin feature/amazing-feature`
+7. Open a Pull Request
+
+We appreciate all contributions, big or small! Feel free to participate and help make Pramana Context better for everyone.
 
 ---
 
@@ -170,28 +193,51 @@ Found a bug? Please open an issue with:
 
 ## 🗺️ Roadmap
 
-**Completed (v1.0.0):**
+**Completed (v2.0.0):**
 - ✅ Core intent capture and tracking
 - ✅ Context-based search and filtering
-- ✅ Domain grouping
+- ✅ Smart domain grouping (Netlify, GitHub Pages, Vercel, etc.)
 - ✅ Abandoned tab detection (7+ days)
 - ✅ Time tracking for open tabs
 - ✅ Export functionality
-- ✅ Dark theme UI
+- ✅ Dark/Light theme toggle
+- ✅ Statistics dashboard with 6 real-time metrics
+- ✅ Date range filtering (Today, Week, Month, 3 Months)
+- ✅ Priority indicators (HIGH/MED badges)
+- ✅ Pagination (10 items per page)
+- ✅ Collapsible domain groups with previews
+- ✅ Toast notification system
+- ✅ Inline intent editing
+- ✅ Bulk operations
+- ✅ Settings persistence
 
 **Planned:**
 - [ ] Import data feature
 - [ ] Tags and categories
 - [ ] Keyboard shortcuts
-- [ ] Statistics dashboard
 - [ ] Browser sync (optional)
-- [ ] Advanced search filters
+- [ ] Custom date range picker
+- [ ] Context sharing/collaboration
+- [ ] Advanced analytics
 
 ---
 
 ## 📊 Version History
 
-### v1.0.0 _(Current)_
+### v2.0.0 _(Current)_
+- Statistics dashboard with 6 real-time metrics
+- Date range filtering (Today, Week, Month, 3 Months)
+- Priority indicators with HIGH/MED badges
+- Pagination (10 items per page)
+- Collapsible domain groups with context previews
+- Dark/Light theme toggle with persistence
+- Toast notification system
+- Tabular layout for better organization
+- Smart domain grouping (Netlify, GitHub Pages, Vercel, Heroku, Azure, Firebase, CloudFront)
+- Enhanced light mode styling
+- Settings persistence improvements
+
+### v1.0.0
 - Initial release
 - Full context tracking system
 - Search, filter, and sort capabilities
@@ -216,12 +262,27 @@ Modern browsing is optimized for speed, not memory. This extension acts as a lig
 
 ## 📜 License
 
-MIT License — see LICENSE file for details
+MIT License — see [LICENSE](LICENSE) file for details
+
+Copyright (c) 2025 Raza Technology Services
+
+Permission is hereby granted, free of charge, to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of this software.
 
 ---
 
 ## 🙏 Acknowledgments
 
-Built with ❤️ for productivity enthusiasts, researchers, and developers everywhere.
+Built with ❤️ by [Raza Technology Services](https://github.com/PanjatanCoders) for productivity enthusiasts, researchers, and developers everywhere.
 
 **Star this repo ⭐** if you find it helpful!
+
+### Support the Project
+- ⭐ Star the repository on [GitHub](https://github.com/PanjatanCoders/pramana-context)
+- 🐛 Report issues or bugs
+- 💡 Share feature ideas
+- 🔀 Contribute code or documentation
+- 📢 Share with others who might find it useful
+
+---
+
+**Made with ❤️ and open-sourced for the community**

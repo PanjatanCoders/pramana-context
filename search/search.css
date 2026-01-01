@@ -783,6 +783,26 @@ body.light-theme input {
     color: #24292f;
 }
 
+body.light-theme select {
+    background: #ffffff;
+}
+
+body.light-theme select:hover {
+    background: #f6f8fa;
+    border-color: #0969da;
+}
+
+body.light-theme select:focus {
+    background: #ffffff;
+    border-color: #0969da;
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.15);
+}
+
+body.light-theme select option {
+    background: #ffffff;
+    color: #24292f;
+}
+
 body.light-theme #search {
     background: #ffffff;
     border-color: #d0d7de;

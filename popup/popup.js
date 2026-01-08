@@ -1,12 +1,27 @@
 import { getContextByUrl, saveContext } from "../storage/contextStore.js";
 import { getAutoSaveEnabled } from "../storage/settingsStore.js";
 
+// Character counter functionality
+function updateCharCounter() {
+    const intentText = document.getElementById("intent");
+    const charCounter = document.getElementById("char-counter");
+    if (intentText && charCounter) {
+        charCounter.textContent = intentText.value.length;
+    }
+}
+
 (async function () {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
 
     // Only work with HTTP/HTTPS URLs
     if (!tab || !tab.url || (!tab.url.startsWith("http://") && !tab.url.startsWith("https://"))) {
-        document.body.innerHTML = '<div style="padding: 20px; text-align: center;">Extension only works on web pages</div>';
+        document.querySelector('.popup-container').innerHTML = `
+            <div style="padding: 40px 20px; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+                <div style="font-size: 14px; font-weight: 600; color: #c9d1d9; margin-bottom: 8px;">Not Available</div>
+                <div style="font-size: 12px; color: #8b949e;">Extension only works on web pages (HTTP/HTTPS)</div>
+            </div>
+        `;
         return;
     }
 
@@ -38,6 +53,7 @@ import { getAutoSaveEnabled } from "../storage/settingsStore.js";
 
         // Enable "Add to Memory" button only when intent is provided
         intentText.addEventListener('input', () => {
+            updateCharCounter();
             if (intentText.value.trim()) {
                 savePageBtn.disabled = false;
                 savePageBtn.style.opacity = "1";
@@ -48,6 +64,9 @@ import { getAutoSaveEnabled } from "../storage/settingsStore.js";
                 savePageBtn.title = "Please add intent first";
             }
         });
+
+        // Initialize character counter
+        updateCharCounter();
 
         savePageBtn.onclick = async () => {
             if (!intentText.value.trim()) {
@@ -96,6 +115,12 @@ import { getAutoSaveEnabled } from "../storage/settingsStore.js";
 
     const intentText = document.getElementById("intent");
     intentText.value = context?.intent || "";
+
+    // Add character counter listener
+    intentText.addEventListener('input', updateCharCounter);
+
+    // Initialize character counter
+    updateCharCounter();
 
     document.getElementById("save").onclick = async () => {
         if (intentText.value.trim()) {

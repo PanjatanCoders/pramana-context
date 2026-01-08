@@ -4,20 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="popup.css" />
-    <title>Document</title>
+    <title>Pramana Context</title>
 </head>
 <body>
-    <h3>Pramana Context</h3>
-    <div id="page-title"></div>
-    <div id="context-status" class="context-status"></div>
-    <textarea name="intent" id="intent" placeholder="Why did you open this? (Required for manual save)"></textarea>
-    <div class="button-group">
-        <button type="button" id="save">Save</button>
-        <button type="button" id="search-btn">Search Memory</button>
+    <div class="popup-container">
+        <!-- Header -->
+        <div class="popup-header">
+            <div class="logo-section">
+                <div class="logo-icon">🧠</div>
+                <div class="logo-text">
+                    <h1>Pramana</h1>
+                    <span class="tagline">Context Memory</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Info -->
+        <div class="page-info">
+            <div class="page-label">Current Page</div>
+            <div id="page-title" class="page-title"></div>
+        </div>
+
+        <!-- Status Badge -->
+        <div id="context-status" class="context-status"></div>
+
+        <!-- Intent Section -->
+        <div class="intent-section">
+            <label for="intent" class="intent-label">
+                <span class="label-text">Your Intent</span>
+                <span class="label-hint">Why did you open this?</span>
+            </label>
+            <textarea
+                name="intent"
+                id="intent"
+                placeholder="e.g., Research React hooks for new feature..."
+                rows="3"
+            ></textarea>
+            <div class="char-count">
+                <span id="char-counter">0</span> characters
+            </div>
+        </div>
+
+        <!-- Primary Action Button -->
+        <button type="button" id="save-page-btn" class="primary-btn hidden">
+            <span class="btn-icon">💾</span>
+            <span class="btn-text">Add to Memory</span>
+        </button>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button type="button" id="save" class="action-btn save-btn">
+                <span class="btn-icon">💾</span>
+                <span class="btn-text">Save</span>
+            </button>
+            <button type="button" id="search-btn" class="action-btn search-btn">
+                <span class="btn-icon">🔍</span>
+                <span class="btn-text">Search Memory</span>
+            </button>
+        </div>
+
+        <!-- Footer Stats (Optional) -->
+        <div class="popup-footer">
+            <div class="footer-text">
+                Press <kbd>Ctrl+Shift+P</kbd> to quick save
+            </div>
+        </div>
     </div>
-    <button type="button" id="save-page-btn" class="save-page-btn hidden">
-        Add to Memory
-    </button>
+
     <script type="module" src="popup.js"></script>
 </body>
 </html>

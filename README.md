@@ -19,7 +19,10 @@ Pramana Context preserves the *intent* behind every tab, so you never lose conte
 - **Export Data**: Backup your contexts in JSON format
 - **Privacy First**: All data stored locally on your device
 
-### Advanced Features
+### Advanced Features (v2.2)
+- **Tags & Categories**: Organize contexts with custom tags for better categorization
+- **Quick Stats in Popup**: See total contexts, active count, and tag count at a glance
+- **Tag Suggestions**: Auto-suggest previously used tags for consistency
 - **Statistics Dashboard**: Real-time metrics for total contexts, active/resolved status, visits, and time spent
 - **Date Range Filtering**: Filter by Today, Last 7 Days, Last 30 Days, or Last 3 Months
 - **Priority Indicators**: Visual HIGH/MED badges for frequently visited or long-running contexts
@@ -33,6 +36,8 @@ Pramana Context preserves the *intent* behind every tab, so you never lose conte
 - **Badge Notifications**: See count of abandoned contexts at a glance
 - **Status Management**: Mark contexts as Active or Resolved
 - **Time Tracking**: See how long you've kept tabs open
+- **Premium Animations**: Smooth transitions and staggered animations throughout the UI
+- **Compact Design**: Optimized popup height for better screen real estate
 
 ---
 
@@ -211,9 +216,17 @@ Found a bug? Please open an issue with:
 - ✅ Bulk operations
 - ✅ Settings persistence
 
+**Completed (v2.2.2):**
+- ✅ Tags and categories system
+- ✅ Tag suggestions from existing tags
+- ✅ Quick stats in popup
+- ✅ Tags display in search/memory page
+- ✅ Premium animations and transitions
+- ✅ Compact popup design
+
 **Planned:**
 - [ ] Import data feature
-- [ ] Tags and categories
+- [ ] Tag filtering in search
 - [ ] Keyboard shortcuts
 - [ ] Browser sync (optional)
 - [ ] Custom date range picker
@@ -224,7 +237,25 @@ Found a bug? Please open an issue with:
 
 ## 📊 Version History
 
-### v2.0.0 _(Current)_
+### v2.2.2 _(Current - December 2024)_
+- **Tags & Categories**: Add custom tags to organize contexts
+- **Tag Suggestions**: Auto-suggest from existing tags (shows up to 5)
+- **Quick Stats**: Popup shows total contexts, active count, and unique tags
+- **Tags in Search**: Display tags in both regular and grouped views
+- **Premium UI**: Redesigned popup with blue gradient header and bold typography
+- **Compact Design**: Reduced padding and font sizes for better space utilization
+- **Enhanced Animations**: Sequential animations with staggered delays
+- **Character Counter**: Real-time character count for intent field
+- **Bug Fixes**: Fixed tags not displaying, improved backward compatibility
+
+### v2.1.0
+- Premium popup redesign with gradient header
+- Bold typography (700-800 font weights)
+- 3D button effects with shadows
+- Character counter for intent textarea
+- Improved spacing and visual hierarchy
+
+### v2.0.0
 - Statistics dashboard with 6 real-time metrics
 - Date range filtering (Today, Week, Month, 3 Months)
 - Priority indicators with HIGH/MED badges

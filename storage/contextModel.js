@@ -8,6 +8,7 @@
  * - url             : Page URL
  * - title           : Page title
  * - intent          : One-line user-defined purpose
+ * - tags            : Array of user-defined tags/categories
  * - createdAt       : First time seen
  * - lastVisitedAt   : Last revisit time
  * - visitCount      : Number of times revisited
@@ -20,6 +21,7 @@ export function createContext({ url, title }) {
     url,
     title,
     intent: null,
+    tags: [],
     createdAt: Date.now(),
     lastVisitedAt: Date.now(),
     visitCount: 1,

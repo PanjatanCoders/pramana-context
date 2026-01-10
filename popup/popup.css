@@ -27,7 +27,7 @@ body {
 
 .popup-header {
     background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
-    padding: 20px;
+    padding: 14px 16px;
     box-shadow: 0 4px 12px rgba(31, 111, 235, 0.3);
 }
 
@@ -38,27 +38,27 @@ body {
 }
 
 .logo-icon {
-    font-size: 32px;
+    font-size: 26px;
     line-height: 1;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .logo-text h1 {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 800;
     color: #ffffff;
     letter-spacing: -0.5px;
     line-height: 1;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .tagline {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.85);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
 }
 
 /* ============================================
@@ -66,28 +66,28 @@ body {
    ============================================ */
 
 .page-info {
-    padding: 16px 20px;
+    padding: 12px 16px;
     background: #161b22;
     border-bottom: 1px solid #21262d;
 }
 
 .page-label {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     color: #8b949e;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .page-title {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: #c9d1d9;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 1.5;
+    line-height: 1.4;
 }
 
 /* ============================================
@@ -96,9 +96,9 @@ body {
 
 .context-status {
     display: none;
-    padding: 12px 20px;
+    padding: 8px 16px;
     text-align: center;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -124,7 +124,7 @@ body {
    ============================================ */
 
 .intent-section {
-    padding: 20px;
+    padding: 14px 16px;
     background: #0d1117;
 }
 
@@ -132,11 +132,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .label-text {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 700;
     color: #c9d1d9;
     text-transform: uppercase;
@@ -144,7 +144,7 @@ body {
 }
 
 .label-hint {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     color: #8b949e;
     font-style: italic;
@@ -152,14 +152,14 @@ body {
 
 textarea {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     border: 2px solid #30363d;
-    border-radius: 8px;
+    border-radius: 6px;
     background: #161b22;
     color: #c9d1d9;
     font-family: inherit;
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 12px;
+    line-height: 1.4;
     resize: vertical;
     transition: all 0.2s ease;
     font-weight: 500;
@@ -178,8 +178,8 @@ textarea:focus {
 }
 
 .char-count {
-    margin-top: 6px;
-    font-size: 11px;
+    margin-top: 4px;
+    font-size: 10px;
     color: #6e7681;
     text-align: right;
     font-weight: 600;
@@ -191,26 +191,208 @@ textarea:focus {
 }
 
 /* ============================================
+   TAGS SECTION
+   ============================================ */
+
+.tags-section {
+    padding: 0 16px 14px 16px;
+    background: #0d1117;
+}
+
+.tags-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 8px;
+    border: 2px solid #30363d;
+    border-radius: 6px;
+    background: #161b22;
+    min-height: 36px;
+    transition: all 0.2s ease;
+}
+
+.tags-container:focus-within {
+    border-color: #1f6feb;
+    background: #0d1117;
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.15);
+}
+
+.tags-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    flex: 1;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+    color: #ffffff;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    box-shadow: 0 2px 4px rgba(31, 111, 235, 0.3);
+    animation: tagPop 0.2s ease-out;
+}
+
+.tag-remove {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    padding: 0;
+    font-size: 13px;
+    line-height: 1;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.tag-remove:hover {
+    color: #ffffff;
+    transform: scale(1.2);
+}
+
+.tags-input {
+    flex: 1;
+    min-width: 120px;
+    border: none;
+    background: transparent;
+    color: #c9d1d9;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    outline: none;
+}
+
+.tags-input::placeholder {
+    color: #6e7681;
+    font-weight: 400;
+}
+
+.tags-suggestions {
+    margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.tag-suggestion {
+    padding: 3px 8px;
+    background: #21262d;
+    color: #8b949e;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tag-suggestion:hover {
+    background: #30363d;
+    color: #c9d1d9;
+    border-color: #1f6feb;
+    transform: translateY(-1px);
+}
+
+@keyframes tagPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ============================================
+   QUICK STATS
+   ============================================ */
+
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    background: #161b22;
+    border-top: 1px solid #21262d;
+    border-bottom: 1px solid #21262d;
+}
+
+.stat-item {
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border-right: 1px solid #21262d;
+    transition: all 0.2s ease;
+}
+
+.stat-item:last-child {
+    border-right: none;
+}
+
+.stat-item:hover {
+    background: #0d1117;
+}
+
+.stat-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1f6feb;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6e7681;
+    line-height: 1;
+}
+
+/* ============================================
    PRIMARY BUTTON
    ============================================ */
 
 .primary-btn {
     width: 100%;
-    padding: 16px 20px;
+    padding: 12px 16px;
     margin: 0;
     background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
     color: #ffffff;
     border: none;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     box-shadow: 0 4px 12px rgba(31, 111, 235, 0.4);
     border-bottom: 3px solid rgba(0, 0, 0, 0.2);
 }
@@ -235,7 +417,7 @@ textarea:focus {
 }
 
 .primary-btn .btn-icon {
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1;
 }
 
@@ -255,14 +437,14 @@ textarea:focus {
 }
 
 .action-btn {
-    padding: 14px 16px;
+    padding: 11px 12px;
     border: none;
     border-right: 1px solid #21262d;
     border-top: 1px solid #21262d;
     background: #0d1117;
     color: #8b949e;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -270,7 +452,7 @@ textarea:focus {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
 }
 
 .action-btn:last-child {
@@ -278,7 +460,7 @@ textarea:focus {
 }
 
 .action-btn .btn-icon {
-    font-size: 20px;
+    font-size: 18px;
     line-height: 1;
     filter: grayscale(100%);
     opacity: 0.6;
@@ -323,16 +505,23 @@ textarea:focus {
    ============================================ */
 
 .popup-footer {
-    padding: 12px 20px;
+    padding: 8px 16px;
     background: #0d1117;
     border-top: 1px solid #21262d;
 }
 
 .footer-text {
-    font-size: 11px;
+    font-size: 10px;
     color: #6e7681;
     text-align: center;
     font-weight: 500;
+}
+
+.footer-message {
+    font-size: 10px;
+    color: #6e7681;
+    text-align: center;
+    font-weight: 600;
 }
 
 kbd {
@@ -372,8 +561,113 @@ kbd {
     }
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Apply animations to elements */
+.popup-header {
+    animation: slideDown 0.4s ease-out;
+}
+
+.page-info {
+    animation: fadeIn 0.5s ease-out 0.1s both;
+}
+
 .context-status {
-    animation: slideDown 0.3s ease-out;
+    animation: slideDown 0.3s ease-out 0.15s both;
+}
+
+.intent-section {
+    animation: slideUp 0.4s ease-out 0.2s both;
+}
+
+.tags-section {
+    animation: slideUp 0.4s ease-out 0.25s both;
+}
+
+.quick-stats {
+    animation: scaleIn 0.3s ease-out 0.3s both;
+}
+
+.stat-item {
+    transition: all 0.2s ease;
+}
+
+.stat-item:nth-child(1) {
+    animation: fadeIn 0.4s ease-out 0.35s both;
+}
+
+.stat-item:nth-child(2) {
+    animation: fadeIn 0.4s ease-out 0.4s both;
+}
+
+.stat-item:nth-child(3) {
+    animation: fadeIn 0.4s ease-out 0.45s both;
+}
+
+.primary-btn {
+    animation: scaleIn 0.3s ease-out 0.5s both;
+}
+
+.action-buttons {
+    animation: fadeIn 0.4s ease-out 0.55s both;
+}
+
+.popup-footer {
+    animation: fadeIn 0.4s ease-out 0.6s both;
+}
+
+/* Character counter animation */
+.char-count {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Button press animation */
+.primary-btn:active:not(:disabled),
+.action-btn:active:not(:disabled) {
+    animation: none;
+}
+
+/* Textarea focus animation */
+textarea:focus {
+    animation: pulse 0.3s ease-out;
 }
 
 /* ============================================

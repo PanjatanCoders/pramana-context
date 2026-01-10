@@ -264,6 +264,11 @@ function renderContexts(contexts) {
                             </div>
                             <textarea class="intent-edit hidden" data-intent-edit="${context.id}" placeholder="Add intent...">${context.intent || ''}</textarea>
                         </div>
+                        ${context.tags && context.tags.length > 0 ? `
+                        <div class="context-tags">
+                            ${context.tags.map(tag => `<span class="context-tag">${tag}</span>`).join('')}
+                        </div>
+                        ` : ''}
                     </div>
                     <div class="context-col-right">
                         <div class="context-actions">
@@ -357,6 +362,11 @@ function renderGroupedView(contexts) {
                             </div>
                             <div class="mini-col-center">
                                 ${context.intent ? `<span class="mini-intent">"${context.intent}"</span>` : '<span class="mini-intent no-intent">-</span>'}
+                                ${context.tags && context.tags.length > 0 ? `
+                                <div class="mini-tags">
+                                    ${context.tags.map(tag => `<span class="mini-tag">${tag}</span>`).join('')}
+                                </div>
+                                ` : ''}
                             </div>
                             <div class="mini-col-right">
                                 <div class="context-mini-actions">

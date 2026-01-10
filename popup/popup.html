@@ -38,10 +38,47 @@
                 name="intent"
                 id="intent"
                 placeholder="e.g., Research React hooks for new feature..."
-                rows="3"
+                rows="2"
             ></textarea>
             <div class="char-count">
                 <span id="char-counter">0</span> characters
+            </div>
+        </div>
+
+        <!-- Tags Section -->
+        <div class="tags-section">
+            <label for="tags-input" class="tags-label">
+                <span class="label-text">Tags</span>
+                <span class="label-hint">Organize with categories</span>
+            </label>
+            <div class="tags-container">
+                <div id="tags-display" class="tags-display"></div>
+                <input
+                    type="text"
+                    id="tags-input"
+                    class="tags-input"
+                    placeholder="Type tag and press Enter..."
+                />
+            </div>
+            <div class="tags-suggestions" id="tags-suggestions"></div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats" id="quick-stats">
+            <div class="stat-item">
+                <span class="stat-icon">📚</span>
+                <span class="stat-value" id="total-contexts">0</span>
+                <span class="stat-label">Contexts</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🎯</span>
+                <span class="stat-value" id="active-contexts">0</span>
+                <span class="stat-label">Active</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🏷️</span>
+                <span class="stat-value" id="total-tags">0</span>
+                <span class="stat-label">Tags</span>
             </div>
         </div>
 
@@ -63,11 +100,9 @@
             </button>
         </div>
 
-        <!-- Footer Stats (Optional) -->
-        <div class="popup-footer">
-            <div class="footer-text">
-                Press <kbd>Ctrl+Shift+P</kbd> to quick save
-            </div>
+        <!-- Footer Stats -->
+        <div class="popup-footer" id="popup-footer">
+            <div class="footer-message" id="footer-message"></div>
         </div>
     </div>
 

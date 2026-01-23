@@ -354,24 +354,28 @@ function renderGroupedView(contexts) {
                     const daysSince = getDaysSinceLastVisit(context.lastVisitedAt);
                     return `
                     <div class="context-item-mini ${abandoned ? 'abandoned' : ''}" data-id="${context.id}">
-                        <div class="context-mini-title">${context.title}</div>
-                        <div class="context-mini-table">
-                            <div class="mini-col-left">
-                                <span>${context.visitCount} visits</span>
-                                ${abandoned ? `<span class="mini-abandoned">⚠️ ${daysSince}d</span>` : ''}
-                            </div>
-                            <div class="mini-col-center">
-                                ${context.intent ? `<span class="mini-intent">"${context.intent}"</span>` : '<span class="mini-intent no-intent">-</span>'}
-                                ${context.tags && context.tags.length > 0 ? `
-                                <div class="mini-tags">
-                                    ${context.tags.map(tag => `<span class="mini-tag">${tag}</span>`).join('')}
+                        <input type="checkbox" class="context-checkbox" data-checkbox-id="${context.id}" ${selectedContextIds.has(context.id) ? 'checked' : ''} />
+                        <div class="context-mini-content">
+                            <div class="context-mini-title">${context.title}</div>
+                            <div class="context-mini-table">
+                                <div class="mini-col-left">
+                                    <span>${context.visitCount} visits</span>
+                                    ${abandoned ? `<span class="mini-abandoned">⚠️ ${daysSince}d</span>` : ''}
                                 </div>
-                                ` : ''}
-                            </div>
-                            <div class="mini-col-right">
-                                <div class="context-mini-actions">
-                                    <button data-url="${context.url}" class="mini-btn">Open</button>
-                                    <button data-id="${context.id}" data-status="${context.status}" class="mini-btn">${context.status === 'active' ? 'Resolve' : 'Active'}</button>
+                                <div class="mini-col-center">
+                                    ${context.intent ? `<span class="mini-intent">"${context.intent}"</span>` : '<span class="mini-intent no-intent">-</span>'}
+                                    ${context.tags && context.tags.length > 0 ? `
+                                    <div class="mini-tags">
+                                        ${context.tags.map(tag => `<span class="mini-tag">${tag}</span>`).join('')}
+                                    </div>
+                                    ` : ''}
+                                </div>
+                                <div class="mini-col-right">
+                                    <div class="context-mini-actions">
+                                        <button data-url="${context.url}" class="mini-btn">Open</button>
+                                        <button data-id="${context.id}" data-status="${context.status}" class="mini-btn">${context.status === 'active' ? 'Resolve' : 'Active'}</button>
+                                        <button data-delete="${context.id}" class="mini-btn delete-btn">×</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -389,6 +393,22 @@ function renderGroupedView(contexts) {
 
     container.querySelectorAll('button[data-id]').forEach(btn => {
         btn.addEventListener('click', () => toggleStatus(btn.dataset.id));
+    });
+
+    container.querySelectorAll('button[data-delete]').forEach(btn => {
+        btn.addEventListener('click', () => deleteContextItem(btn.dataset.delete));
+    });
+
+    container.querySelectorAll('.context-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            const contextId = e.target.dataset.checkboxId;
+            if (e.target.checked) {
+                selectedContextIds.add(contextId);
+            } else {
+                selectedContextIds.delete(contextId);
+            }
+            updateBulkActionsState();
+        });
     });
 
     // Add toggle event listeners for collapsible groups
@@ -575,7 +595,6 @@ async function toggleAutoSave(enabled) {
 async function toggleEditIntent(contextId) {
     const intentDisplayWrapper = document.querySelector(`[data-intent-display="${contextId}"]`);
     const intentEdit = document.querySelector(`[data-intent-edit="${contextId}"]`);
-    const editIcon = document.querySelector(`.intent-edit-icon[data-edit="${contextId}"]`);
 
     if (intentEdit.classList.contains('hidden')) {
         // Enter edit mode

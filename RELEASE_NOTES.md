@@ -1,6 +1,24 @@
-# Release Notes - Pramana Context v2.2.2
+# Release Notes - Pramana Context v2.2.3
 
 **Release Date**: January 2026
+
+## 🎉 What's New in v2.2.3
+
+### ✨ Enhanced Delete Functionality
+Complete delete support across all views!
+
+**Features:**
+- **Single Delete in Grouped View**: Delete button (×) now available for each context in grouped view
+- **Bulk Delete in Grouped View**: Checkboxes added to grouped view for multi-select
+- **Select All**: Works seamlessly in both regular and grouped views
+- **Confirmation Dialogs**: Confirm before deleting multiple contexts
+- **Consistent UI**: Delete buttons styled consistently across all views
+
+**Bug Fixes:**
+- Fixed unused variable warning in intent editing function
+- Improved layout in grouped view with checkbox integration
+
+---
 
 ## 🎉 What's New in v2.2.2
 

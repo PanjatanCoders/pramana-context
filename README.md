@@ -237,7 +237,14 @@ Found a bug? Please open an issue with:
 
 ## 📊 Version History
 
-### v2.2.2 _(Current - December 2024)_
+### v2.2.3 _(Current - January 2026)_
+- **Enhanced Delete Functionality**: Complete delete support in grouped view
+- **Single Delete**: Delete button (×) now available in grouped view
+- **Bulk Delete in Grouped View**: Checkboxes added for multi-select
+- **Select All**: Works seamlessly in both regular and grouped views
+- **Bug Fixes**: Fixed unused variable warning, improved layout in grouped view
+
+### v2.2.2
 - **Tags & Categories**: Add custom tags to organize contexts
 - **Tag Suggestions**: Auto-suggest from existing tags (shows up to 5)
 - **Quick Stats**: Popup shows total contexts, active count, and unique tags
